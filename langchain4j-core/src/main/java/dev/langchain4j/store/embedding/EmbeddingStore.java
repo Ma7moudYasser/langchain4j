@@ -52,6 +52,38 @@ public interface EmbeddingStore<Embedded> {
      * @param embeddings A list of embeddings to be added to the store.
      * @return A list of auto-generated IDs associated with the added embeddings.
      */
+        /**
+     I have added a hook where it
+     Automatically adds a new id field during embedding insertion.
+
+     Removes any previous records with matching IDs (avoiding duplication/conflicts).
+
+     Extracts id from TextSegment.metadata() and injects it into Milvus as a separate field.
+     */
+    default boolean shouldInsertAndAddExtraFieldsBeforeInsert(List<InsertParam.Field> fields, List<String> ids, List<Embedding> embeddings,
+                                                               List<TextSegment> textSegments)
+    {
+        return true;
+    }
+
+    /**
+
+     Custom fields (like x_id) to be dynamically added to the Milvus collection schema during collection creation.
+     */
+
+    default void addExtraFieldsDefinitionOnStore(CollectionSchemaParam.Builder schemaBuilder, String collectionName)
+    {
+
+    }
+
+    /**
+     afterCollectionCreated as a hook to allow post-creation logic (though I left it as an empty implementation for now).
+     */
+
+    default void afterCollectionCreatedOnStore(MilvusServiceClient milvusClient, String collectionName)
+    {
+
+    }
     List<String> addAll(List<Embedding> embeddings);
 
     /**
